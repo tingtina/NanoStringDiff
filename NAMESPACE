@@ -1,0 +1,21 @@
+import( Biobase )
+import( methods )
+importFrom( "matrixStats","rowMins","rowMaxs" )
+
+exportClasses("NanoStringSet") 
+exportMethods(
+              positiveFactor, "positiveFactor<-",
+              negativeFactor, "negativeFactor<-",
+              housekeepingFactor, "housekeepingFactor<-",
+              positiveControl, "positiveControl<-",
+              negativeControl, "negativeControl<-",
+              housekeepingControl, "housekeepingControl<-"
+              )
+
+export(
+       createNanoStringSet,
+       createNanoStringSetFromCsv,
+       estNormalizationFactors, 
+       glm.LRT
+)
+
