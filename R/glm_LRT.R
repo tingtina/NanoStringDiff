@@ -8,7 +8,7 @@ glm.LRT <- function(NanoStringData, design.full, Beta = ncol(design.full), contr
     
     if (length(k) == 0) {
         stop("Before calling function glm.LRT, should get normalization factors \n             
-              first using function estNormalizationFactors")
+             first using function estNormalizationFactors")
     }
     
     
@@ -47,7 +47,7 @@ glm.LRT <- function(NanoStringData, design.full, Beta = ncol(design.full), contr
             check.Beta = Beta %in% Beta.names
             if (any(!check.Beta)) 
                 stop("The name(s) of Beta arguments do not match the \n
-                      name(s) of the design matrix.")
+                     name(s) of the design matrix.")
             Beta = match(Beta, Beta.names)
         }
         
@@ -107,6 +107,7 @@ glm.LRT <- function(NanoStringData, design.full, Beta = ncol(design.full), contr
         alpha = 1/phi
         tmp1 = 1/(1 + Ey * phi)
         tmp2 = 1 - tmp1
+        tmp2[tmp2==0] = 1e-08
         
         
         item1 = function(yy) {
@@ -115,13 +116,13 @@ glm.LRT <- function(NanoStringData, design.full, Beta = ncol(design.full), contr
             tmp2_gi = yy[3]
             t = c(0:y_gi)
             tmp33.t = exp(lgamma(t + alpha) + (y_gi - t) * log(lamda_gi) + t * log(tmp2_gi) - 
-                lfactorial(t) - lfactorial(y_gi - t))
+                              lfactorial(t) - lfactorial(y_gi - t))
             tmp33.tt = log(max(sum(tmp33.t), 1e-08))
         }
         
         
         tmp3 = apply(cbind(matrix(y, ncol = 1), matrix(lamda_i, ncol = 1), matrix(tmp2, 
-            ncol = 1)), 1, item1)
+                                                                                  ncol = 1)), 1, item1)
         
         sum(tmp3) - nsamples * lgamma(alpha) + alpha * sum(log(tmp1)) - sum(lamda_i)
     }
@@ -154,10 +155,10 @@ glm.LRT <- function(NanoStringData, design.full, Beta = ncol(design.full), contr
     
     
     list(table = table, dispersion = phi.hat, log.dispersion = log(phi.hat), design.full = X.full, 
-        design.reduce = design.reduce, Beta.full = Beta.full, mean.full = U.full, 
-        Beta.reduce = Beta.reduce, mean.reduce = U.reduce, m0 = m0, sigma = sigma)
+         design.reduce = design.reduce, Beta.full = Beta.full, mean.full = U.full, 
+         Beta.reduce = Beta.reduce, mean.reduce = U.reduce, m0 = m0, sigma = sigma)
     
-}
+    }
 
 
 glmfit.full <- function(NanoStringData, design.full) {
@@ -211,8 +212,8 @@ glmfit.full <- function(NanoStringData, design.full) {
         sigma2.base = compute.baseSigma(exp(m0), Y[ii, ], V[ii, ], nsamples)
         sigma = sqrt(max(sigma2.mar - sigma2.base, 0.01))
     } else {
-        cat("There is no data satisied that min of endo great than max \n            of negative control ", 
-            "\n")
+        cat("There is no data satisied that min of endo great than max 
+            of negative control ", "\n")
         m0 = -2
         sigma = 1
         lphi.g0 = 10
@@ -233,6 +234,7 @@ glmfit.full <- function(NanoStringData, design.full) {
             alpha = 1/phi
             tmp1 = 1/(1 + Ey * phi)
             tmp2 = 1 - tmp1
+            tmp2[tmp2==0] = 1e-08
             
             item1 = function(yy) {
                 y_gi = yy[1]
@@ -243,16 +245,16 @@ glmfit.full <- function(NanoStringData, design.full) {
                 
                 
                 tmp33.t = exp(rowMins(cbind(lgamma(t + alpha) + (y_gi - t) * log(lamda_gi) + 
-                  t * log(tmp2_gi) - lfactorial(t) - lfactorial(y_gi - t), com)))
+                                                t * log(tmp2_gi) - lfactorial(t) - lfactorial(y_gi - t), com)))
                 tmp33.tt = log(max(sum(tmp33.t), 1e-08))
                 
             }
             tmp3 = apply(cbind(matrix(y, ncol = 1), matrix(lamda_i, ncol = 1), matrix(tmp2, 
-                ncol = 1)), 1, item1)
+                                                                                      ncol = 1)), 1, item1)
             
             
             -(sum(tmp3) - nsamples * lgamma(alpha) + alpha * sum(log(tmp1)) - ((log(phi) - 
-                m0)^2)/(2 * (sigma^2)) - log(sigma) - sum(lamda_i))
+                                                                                    m0)^2)/(2 * (sigma^2)) - log(sigma) - sum(lamda_i))
         }
         return(optimize(obj, interval = c(0.005, max.phi))$minimum)
     }
@@ -268,8 +270,11 @@ glmfit.full <- function(NanoStringData, design.full) {
             
             
             alpha = 1/phi
-            tmp1 = 1/(1 + exp(beta %*% t(design.full)) * k * phi)
+            xb = beta %*% t(design.full)
+            xb[xb > 700] = 700       ## control upper band for exp operation
+            tmp1 = 1/(1 + exp(xb) * k * phi)
             tmp2 = 1 - tmp1
+            tmp2[tmp2==0] = 1e-08
             
             
             item1 = function(yy) {
@@ -283,17 +288,17 @@ glmfit.full <- function(NanoStringData, design.full) {
                 
                 
                 tmp33.t = exp(rowMins(cbind(lgamma(t + alpha) + (y_gi - t) * log(lamda_gi) + 
-                  t * log(tmp2_gi) - lfactorial(t) - lfactorial(y_gi - t), com)))
+                                                t * log(tmp2_gi) - lfactorial(t) - lfactorial(y_gi - t), com)))
                 tmp33.tt = log(max(sum(tmp33.t), 1e-08))
             }
             
             tmp3 = apply(cbind(matrix(y, ncol = 1), matrix(lamda_i, ncol = 1), matrix(tmp2, 
-                ncol = 1)), 1, item1)
+                                                                                      ncol = 1)), 1, item1)
             
             
             
             -(sum(tmp3) - n * lgamma(alpha) + alpha * sum(log(tmp1)) - ((log(phi) - 
-                m0)^2)/(2 * (sigma^2)) - log(sigma) - sum(lamda_i))
+                                                                             m0)^2)/(2 * (sigma^2)) - log(sigma) - sum(lamda_i))
         }
         
         
@@ -307,7 +312,7 @@ glmfit.full <- function(NanoStringData, design.full) {
     phi.full = rep(0, ngenes)
     
     phi.s = apply(cbind(matrix(Y, ncol = nsamples), matrix(V, ncol = nsamples)), 
-        1, get.phi)
+                  1, get.phi)
     B.s = Blm
     Y.t = Y
     
@@ -318,15 +323,15 @@ glmfit.full <- function(NanoStringData, design.full) {
     while ((con11 >= 0.5 | con21 >= 0.001) & j < 50) {
         j = j + 1
         Beta = apply(cbind(matrix(Y.t, ncol = nsamples), matrix(phi.s, ncol = 1), 
-            matrix(B.s, ncol = nbeta)), 1, get.beta.full)
-        Beta[which(Beta <= -30)] = -30
-        U.t = exp(t(design.full %*% Beta))
+                           matrix(B.s, ncol = nbeta)), 1, get.beta.full)
+        
+        xb = t(design.full %*% Beta)
+        xb[xb > 700] = 700         ## control the upper band of exp operation
+        U.t = exp(xb)
         V.t = sweep(U.t, 2, k, FUN = "*")
-        ## if mean value close to 0, get.phi function will produce NA value, since log(0)
-        ## is inf
-        V.t[V.t < 1e-10] = 1e-10
+        
         phi.t = apply(cbind(matrix(Y.t, ncol = nsamples), matrix(V.t, ncol = nsamples)), 
-            1, get.phi)
+                      1, get.phi)
         con1 = rowMaxs(abs((B.s - t(Beta))/t(Beta)))
         con2 = abs((phi.s - phi.t)/phi.s)
         con11 = max(con1)
@@ -354,9 +359,18 @@ glmfit.full <- function(NanoStringData, design.full) {
         
     }
     
-    if (j == 50) {
-        Beta.full[id, ] = t(Beta)
-        phi.full[id] = phi.t
+    
+    if (j == 50 & !length(idx) == length(id)) {
+        
+        if(length(idx) == 0) {
+            Beta.full[id, ] = t(Beta)
+            phi.full[id] = phi.t
+        } else{
+            Beta.full[id, ] = t(Beta)[-idx,]
+            phi.full[id] = phi.t[-idx]
+        }
+        
+        
     }
     
     U.full = exp(Beta.full %*% t(design.full))
@@ -367,10 +381,11 @@ glmfit.full <- function(NanoStringData, design.full) {
     
     
     list(Beta.full = Beta.full, design = design.full, dispersion = phi.full, log.dispersion = eta, 
-        m0 = m0, sigma = sigma, df.full = nbeta, mean.full = U.full, nineration = j)
+         m0 = m0, sigma = sigma, df.full = nbeta, mean.full = U.full, nineration = j)
     
     
 }
+
 
 
 glmfit.reduce <- function(NanoStringData, design.reduce, m0, sigma, phi) {
@@ -411,8 +426,11 @@ glmfit.reduce <- function(NanoStringData, design.reduce, m0, sigma, phi) {
             
             
             alpha = 1/phi
-            tmp1 = 1/(1 + exp(beta %*% t(design.reduce)) * k * phi)
+            xb = beta %*% t(design.reduce)
+            xb[xb > 700] = 700        ## control upper band for exp operation
+            tmp1 = 1/(1 + exp(xb) * k * phi)
             tmp2 = 1 - tmp1
+            tmp2[tmp2==0] = 1e-08
             
             
             item1 = function(yy) {
@@ -426,16 +444,16 @@ glmfit.reduce <- function(NanoStringData, design.reduce, m0, sigma, phi) {
                 
                 
                 tmp33.t = exp(rowMins(cbind(lgamma(t + alpha) + (y_gi - t) * log(lamda_gi) + 
-                  t * log(tmp2_gi) - lfactorial(t) - lfactorial(y_gi - t), com)))
+                                                t * log(tmp2_gi) - lfactorial(t) - lfactorial(y_gi - t), com)))
                 tmp33.tt = log(max(sum(tmp33.t), 1e-08))
             }
             
             tmp3 = apply(cbind(matrix(y, ncol = 1), matrix(lamda_i, ncol = 1), matrix(tmp2, 
-                ncol = 1)), 1, item1)
+                                                                                      ncol = 1)), 1, item1)
             
             
             -(sum(tmp3) - n * lgamma(alpha) + alpha * sum(log(tmp1)) - ((log(phi) - 
-                m0)^2)/(2 * (sigma^2)) - log(sigma) - sum(lamda_i))
+                                                                             m0)^2)/(2 * (sigma^2)) - log(sigma) - sum(lamda_i))
         }
         
         
@@ -444,13 +462,13 @@ glmfit.reduce <- function(NanoStringData, design.reduce, m0, sigma, phi) {
     
     
     Beta.reduce = apply(cbind(matrix(Y, ncol = nsamples), matrix(phi, ncol = 1), 
-        matrix(Blm, ncol = nbeta)), 1, get.beta.reduce)
+                              matrix(Blm, ncol = nbeta)), 1, get.beta.reduce)
     U.reduce = exp(t(design.reduce %*% Beta.reduce))
     V.reduce = sweep(U.reduce, 2, k, FUN = "*")
     
     
     list(Beta.reduce = t(Beta.reduce), mean.reduce = U.reduce, dispersion = phi, 
-        df.reduce = nbeta)
+         df.reduce = nbeta)
 }
 
 
@@ -480,6 +498,7 @@ glmfit.OneGroup <- function(NanoStringData, m0, sigma, phi) {
             alpha = 1/phi
             tmp1 = 1/(1 + mu * k * phi)
             tmp2 = 1 - tmp1
+            tmp2[tmp2==0] = 1e-08
             
             
             item1 = function(yy) {
@@ -491,16 +510,16 @@ glmfit.OneGroup <- function(NanoStringData, m0, sigma, phi) {
                 
                 
                 tmp33.t = exp(rowMins(cbind(lgamma(t + alpha) + (y_gi - t) * log(lamda_gi) + 
-                  t * log(tmp2_gi) - lfactorial(t) - lfactorial(y_gi - t), com)))
+                                                t * log(tmp2_gi) - lfactorial(t) - lfactorial(y_gi - t), com)))
                 tmp33.tt = log(max(sum(tmp33.t), 1e-08))
             }
             
             tmp3 = apply(cbind(matrix(y, ncol = 1), matrix(lamda_i, ncol = 1), matrix(tmp2, 
-                ncol = 1)), 1, item1)
+                                                                                      ncol = 1)), 1, item1)
             
             
             -(sum(tmp3) - n * lgamma(alpha) + alpha * sum(log(tmp1)) - ((log(phi) - 
-                m0)^2)/(2 * (sigma^2)) - log(sigma) - sum(lamda_i))
+                                                                             m0)^2)/(2 * (sigma^2)) - log(sigma) - sum(lamda_i))
         }
         
         

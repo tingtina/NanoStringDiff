@@ -12,9 +12,10 @@
  nCounter analyzer. This class a subclass of \code{ExpressionSet}, with six 
  more slots: positiveControl, negativeControl, housekeepingControl, 
  positiveFactor, negativeFactor and housekeepingFactor.
- The constructor functions create a NanoStringSet object from two typrs of 
- input: seperate matrix or csv files. See the vignette for examples of 
- contruction trom these two input types.
+ The constructor functions \code{createNanoStringSet} and 
+ \code{createNanoStringSetFromCsv} create a NanoStringSet object from two types 
+ of input: seperate matrix or csv files. See the vignette for examples of 
+ contruction from these two input types.
  }
 
 \usage{
