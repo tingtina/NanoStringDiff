@@ -1,7 +1,7 @@
 Package: NanoStringDiff
 Type: Package
 Title: Differential Expression Analysis of NanoString nCounter Data
-Version: 1.1.1
+Version: 1.2.0
 Date: 2015-08-3
 Imports: matrixStats, methods
 Depends: Biobase
