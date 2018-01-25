@@ -1,7 +1,8 @@
 import( Biobase )
 import( methods )
-importFrom( "matrixStats","rowMins","rowMaxs" )
-
+import(Rcpp)
+importFrom( "matrixStats","rowMins","rowMaxs")
+importFrom(Rcpp, evalCpp)
 exportClasses("NanoStringSet") 
 exportMethods(
               positiveFactor, "positiveFactor<-",
@@ -16,6 +17,10 @@ export(
        createNanoStringSet,
        createNanoStringSetFromCsv,
        estNormalizationFactors, 
-       glm.LRT
+       glm.LRT,
+       NanoStringDataNormalization,
+       PlotsPositiveHousekeeping
 )
 
+exportPattern("^[[:alpha:]]+")
+useDynLib(NanoStringDiff)
