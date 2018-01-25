@@ -2,7 +2,7 @@ Package: NanoStringDiff
 Type: Package
 Title: Differential Expression Analysis of NanoString nCounter Data
 Version: 1.8.1
-Date: 2017-04-14
+Date: 2018-01-24
 Imports: matrixStats, methods, Rcpp
 LinkingTo: Rcpp
 Depends: Biobase
