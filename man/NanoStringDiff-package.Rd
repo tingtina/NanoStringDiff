@@ -1,24 +1,34 @@
 \name{NanoStringDiff-package}
-\docType{package}
-\alias{NanoStringDiff}
 \alias{NanoStringDiff-package}
-
+\alias{NanoStringDiff}
+\docType{package}
 \title{
- NanoStringDiff package for differential expression analysis 
- of NanoString nCounter data
+  A short title line describing what the package does
 }
 \description{
-  NanoStringDiff is an R package for differential expression analysis of 
-  NanoString nCounter data, and the main function for differential analysis 
-  is \code{\link{glm.LRT}}. See the examples at \code{\link{glm.LRT}} for 
-  basic analysis steps. 
-  NanoStringDiff utilizes a generalized linear model (GLM) of the negative 
-  binomial family to characterize count data and allows for multi-factor design.
+  A more detailed description of what the package does. A length
+  of about one to five lines is recommended.
 }
-
+\details{
+  This section should provide a more detailed overview of how to use the
+  package, including the most important functions.
+}
 \author{
-  hong Wang <hong.wang@uky.edu>
-  chi wang <chi.wang@uky.edu>
-}
+Your Name, email optional.
 
-\keyword{package}
+Maintainer: Your Name <your@email.com>
+}
+\references{
+  This optional section can contain literature or other references for
+  background information.
+}
+\keyword{ package }
+\seealso{
+  Optional links to other man pages
+}
+\examples{
+  \dontrun{
+     ## Optional simple examples of the most important functions
+     ## These can be in \dontrun{} and \donttest{} blocks.   
+  }
+}

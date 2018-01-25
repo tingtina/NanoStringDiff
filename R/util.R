@@ -20,26 +20,9 @@ est.dispersion <- function(Y, Y_nph, lamda_i, c, d) {
             tmp1 = 1/(1 + Ey * phi)
             tmp2 = 1 - tmp1
             tmp2[tmp2==0] = 1e-08
-            
-            item1 = function(yy) {
-                y_gi = yy[1]
-                lamda_gi = yy[2]
-                tmp2_gi = yy[3]
-                t = c(0:y_gi)
-                com = matrix(700, length(t), 1)
-                
-                
-                tmp33.t = exp(rowMins(cbind(lgamma(t + alpha) + 
-                                                (y_gi - t) * log(lamda_gi) + t * log(tmp2_gi) - 
-                                                lfactorial(t) - lfactorial(y_gi - t), com)))
-                tmp33.tt = log(max(sum(tmp33.t), 1e-08))
-                
-            }
-            
-            tmp3 = apply(cbind(matrix(y, ncol = 1), matrix(lamda_i, ncol = 1), 
-                               matrix(tmp2, ncol = 1)), 1, item1)
-            -(sum(tmp3) - nsamples * lgamma(alpha) + alpha * sum(log(tmp1)) - 
-                  sum(lamda_i))
+            tmp3.p = fun5(cbind(matrix(y, ncol = 1), matrix(lamda_i, ncol = 1), 
+                                matrix(tmp2, ncol = 1),rep(alpha,length(y))))
+            -tmp3.p
         }
         return(optimize(obj, interval = c(1e-08, 1e+08))$minimum)
     }
