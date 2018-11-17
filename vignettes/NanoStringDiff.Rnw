@@ -80,7 +80,7 @@ for NanoString nCounter Data:
       In this section we use {\tt NanoStringData} directly, which is an object 
       of {\tt NanoStringSet} contained in the package. 
 \item Make a design matrix to describe treatment conditions. 
-\item Estimate norlamization factors including positive size factors, 
+\item Estimate normalization factors including positive size factors, 
       housekeeping size factors and background noise using 
       {\tt estNormalizationFactors}
 \item Perform a likelihood ratio test using {\tt glm.LRT}. 
@@ -138,7 +138,7 @@ and the data for each sample hybridization are contained in a
 separate RCC file. So before you call {\tt createNanoStringSetFromCsv} 
 to creat a {\tt NanoStringSet} object, you should create a csv.file 
 to combine all interesting samples together, and the first three 
-columns shoud be "CodeClass", "Name" ane "Accession", the counts 
+columns shoud be "CodeClass", "Name" and "Accession", the counts 
 data contained from the $4^{th}$ column to the last column.
 
 Note:
